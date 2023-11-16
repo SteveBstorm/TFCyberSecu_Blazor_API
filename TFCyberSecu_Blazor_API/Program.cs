@@ -11,9 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(o => o.AddPolicy("signalrPolicy", options =>
+    options.WithOrigins("https://localhost:7106", "http://localhost:4200")
+    .AllowAnyHeader().AllowCredentials().AllowAnyMethod())); ;
+
+
 builder.Services.AddTransient(sp => 
     new SqlConnection(builder.Configuration.GetConnectionString("default")));
 builder.Services.AddScoped<IArticleService, ArticleService>();
+
+builder.Services.AddSingleton<ArticleHub>();
 
 builder.Services.AddSignalR();
 
@@ -26,14 +33,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("signalrPolicy");
 app.UseHttpsRedirection();
 
-app.UseCors(o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
+//app.UseCors(o => o.AllowAnyOrigin().AllowCredentials().AllowAnyHeader().AllowAnyMethod());
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapHub<ChatHub>("chathub");
+app.MapHub<ArticleHub>("articlehub");
 
 app.Run();

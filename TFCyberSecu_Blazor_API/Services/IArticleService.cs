@@ -4,7 +4,7 @@ namespace TFCyberSecu_Blazor_API.Services
 {
     public interface IArticleService
     {
-        void Create(Article article);
+        Task Create(Article article);
         IEnumerable<Article> GetAll();
         Article GetById(int id);
     }
